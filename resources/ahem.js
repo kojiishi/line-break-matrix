@@ -19,11 +19,11 @@ var ahem = function (dir) {
   }
 
   console.log("Cannot determine fonts status, wait for 1sec.")
-  if (window.Promise) {
-    return Promise(function (resolve, reject) {
-      setTimeout(resolve, 1000);
-    });
-  }
+  // if (window.Promise) {
+  //   return Promise(function (resolve, reject) {
+  //     setTimeout(resolve, 1000);
+  //   });
+  // }
 
   return {
     then: function (onResolved) {
