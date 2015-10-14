@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<title>Line Break Matrix</title>
+<script src="resources/ahem.js"></script>
+<style>
+#test {
+  font:50px/1 Ahem;
+  width:1em;
+}
+#result {
+  font:15px/1 Courier, monospace;
+  white-space:pre;
+}
+</style>
+<h1>Line Break Matrix</h1>
+<div>
+  <a href="?">Normal</a>
+  <a href="?word-break=break-all">break-all</a>
+</div>
+<div id="result"></div>
+<div id="test"></div>
+<script>
+var beginChar = 33;
+var endChar = 127;
+
+var args = location.search;
+if (args && args.length > 1) {
+  args.slice(1).split("&").forEach(function (arg) {
+    arg = arg.split("=", 2);
+    test.style[arg[0]] = arg[1];
+  });
+}
+
+var testFontsize = parseFloat(getComputedStyle(test).fontSize);
+ahem().then(run);
+
+function run() {
+  var matrix = getLineBreakMatrix();
+  dumpLineBreakMatrix(matrix);
+  test.textContent = "";
+}
+
+function getLineBreakMatrix() {
+  var matrix = [];
+  for (var last = beginChar; last < endChar; last++) {
+    var canBreakBefore = [];
+    for (var current = beginChar; current < endChar; current++)
+      canBreakBefore.push(canBreakBetween(last, current));
+    matrix.push(canBreakBefore);
+  }
+  return matrix;
+}
+
+function canBreakBetween(last, current) {
+  test.textContent = String.fromCharCode(last) + String.fromCharCode(current);
+  return test.offsetHeight / testFontsize > 1.9;
+}
+
+function dumpLineBreakMatrix(matrix) {
+  var header = [];
+  for (var i = 0; i < matrix.length; i++)
+    header.push(String.fromCharCode(beginChar + i));
+  var rows = ["  " + header.join("")];
+  for (var i = 0; i < matrix.length; i++) {
+    rows.push(String.fromCharCode(beginChar + i) + " " + matrix[i].map(function (canBreak) {
+      return canBreak ? "/" : "X";
+    }).join(""));
+  }
+  result.textContent = rows.join("\n");
+}
+</script>
