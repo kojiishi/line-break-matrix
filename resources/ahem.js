@@ -1,5 +1,5 @@
-var ahem = function () {
-  var url = "resources/AHEM____.TTF";
+var ahem = function (dir) {
+  var url = dir + "AHEM____.TTF";
   if (window.FontFace) {
     var font = new FontFace("Ahem", "url(" + url + ")");
     document.fonts.add(font);
