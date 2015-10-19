@@ -90,13 +90,22 @@ function dumpLineBreakMatrix(characters, matrix) {
   var header = [];
   for (var i = 0; i < matrix.length; i++)
     header.push(characters[i]);
-  var rows = ["  " + header.join("")];
+  var rows = ["        " + header.join("")];
   for (var i = 0; i < matrix.length; i++) {
-    rows.push(characters[i] + " " + matrix[i].map(function (canBreak) {
-      return canBreak ? "/" : "X";
-    }).join(""));
+    rows.push(
+      toHex(characters[i].charCodeAt(0)) + " " +
+      characters[i] + " " +
+      matrix[i].map(function (canBreak) {
+        return canBreak ? "/" : "X";
+      }).join(String.fromCharCode(0x200C)));
   }
   result.textContent = rows.join("\n");
+}
+
+function toHex(value) {
+  var str = value.toString(16).toUpperCase();
+  var pad = "00000";
+  return pad.substring(0, pad.length - str.length) + str;
 }
 
 function debug(text) {
