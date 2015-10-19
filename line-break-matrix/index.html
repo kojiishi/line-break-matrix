@@ -10,61 +10,98 @@
   font:15px/1 Courier, monospace;
   white-space:pre;
 }
+#log {
+  background-color:lightgray;
+  padding:.2em;
+}
 </style>
 <h1>Line Break Matrix</h1>
 <div>
   <a href="?">Normal</a>
   <a href="?word-break=break-all">break-all</a>
 </div>
+<div id="log"></div>
 <div id="result"></div>
 <div id="test"></div>
 <script>
-var beginChar = 33;
-var endChar = 127;
-
-var args = location.search;
-if (args && args.length > 1) {
-  args.slice(1).split("&").forEach(function (arg) {
-    arg = arg.split("=", 2);
-    test.style[arg[0]] = arg[1];
-  });
-}
-
 var testFontsize = parseFloat(getComputedStyle(test).fontSize);
-ahem("../resources/").then(run);
+ahem("../resources/").then(function () {
+  debug("Calculating...");
+  setTimeout(function () {
+    run();
+    debug("Done.");
+  }, 10);
+});
 
 function run() {
-  var matrix = getLineBreakMatrix();
-  dumpLineBreakMatrix(matrix);
+  var characters = null;
+  var args = location.search;
+  if (args && args.length > 1) {
+    args.slice(1).split("&").forEach(function (arg) {
+      arg = arg.split("=", 2);
+      switch (arg[0]) {
+      case "code":
+        characters = createCharacterArray(arg[1]);
+        break;
+      default:
+        test.style[arg[0]] = arg[1];
+        break;
+      }
+    });
+  }
+  if (!characters)
+    characters = createCharacterArray(33, 127);
+  var matrix = getLineBreakMatrix(characters);
+  dumpLineBreakMatrix(characters, matrix);
   test.textContent = "";
 }
 
-function getLineBreakMatrix() {
+function createCharacterArray(begin, last) {
+  if (!last) {
+    var range = begin.split("-").map(function (v) { return parseInt(v, 16); });
+    begin = range[0];
+    last = range[1];
+  }
+  var count = last - begin + 1;
+  return Array.apply(0, Array(count)).map(function(v, i) {
+    return String.fromCharCode(begin + i); })
+}
+
+function getLineBreakMatrix(characters) {
   var matrix = [];
-  for (var last = beginChar; last < endChar; last++) {
+  for (var lastIndex = 0; lastIndex < characters.length; lastIndex++) {
+    var last = characters[lastIndex];
     var canBreakBefore = [];
-    for (var current = beginChar; current < endChar; current++)
+    for (var currentIndex = 0; currentIndex < characters.length; currentIndex++) {
+      var current = characters[currentIndex];
       canBreakBefore.push(canBreakBetween(last, current));
+    }
     matrix.push(canBreakBefore);
   }
   return matrix;
 }
 
 function canBreakBetween(last, current) {
-  test.textContent = String.fromCharCode(last) + String.fromCharCode(current);
+  test.textContent = last + current;
   return test.offsetHeight / testFontsize > 1.9;
 }
 
-function dumpLineBreakMatrix(matrix) {
+function dumpLineBreakMatrix(characters, matrix) {
   var header = [];
   for (var i = 0; i < matrix.length; i++)
-    header.push(String.fromCharCode(beginChar + i));
+    header.push(characters[i]);
   var rows = ["  " + header.join("")];
   for (var i = 0; i < matrix.length; i++) {
-    rows.push(String.fromCharCode(beginChar + i) + " " + matrix[i].map(function (canBreak) {
+    rows.push(characters[i] + " " + matrix[i].map(function (canBreak) {
       return canBreak ? "/" : "X";
     }).join(""));
   }
   result.textContent = rows.join("\n");
+}
+
+function debug(text) {
+  var div = document.createElement("div");
+  div.appendChild(document.createTextNode(text));
+  log.appendChild(div);
 }
 </script>
