@@ -16,9 +16,9 @@ function loadFont(name, url) {
 
   // Try CSS Fonts next
   var style = document.createElement("style");
-  style.appendChild(document.createTextNode("@font-face{" +
+  style.textContent = "@font-face{" +
     "font-family:" + name + ";" +
-    "src:url(" + url + ");}"));
+    "src:url(" + url + ");}";
   document.getElementsByTagName('head')[0].appendChild(style);
 
   if (document.fonts) {
