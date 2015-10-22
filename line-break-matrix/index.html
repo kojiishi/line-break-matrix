@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <title>Line Break Matrix</title>
-<script src="../resources/ahem.js"></script>
+<script src="../resources/fontloader.js"></script>
 <style>
 #test {
-  font:50px/1 Ahem;
+  font:50px/1 testfw;
   width:1em;
 }
 #result {
@@ -25,11 +25,11 @@
 <div id="test"></div>
 <script>
 var testFontsize = parseFloat(getComputedStyle(test).fontSize);
-ahem("../resources/").then(function () {
+testfwFont("../resources/").then(function () {
   debug("Calculating...");
   setTimeout(function () {
     run();
-    debug("Done.");
+    log.style.display = "none";
   }, 10);
 });
 
@@ -50,7 +50,7 @@ function run() {
     });
   }
   if (!characters)
-    characters = createCharacterArray(33, 127);
+    characters = createCharacterArray(0x21, 0x7E);
   var matrix = getLineBreakMatrix(characters);
   dumpLineBreakMatrix(characters, matrix);
   test.textContent = "";
