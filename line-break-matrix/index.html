@@ -136,13 +136,16 @@ function dumpLineBreakMatrix(characters, matrix, compare) {
 }
 
 function createJsonDownloadLink(obj) {
+  var json = JSON.stringify(obj);
+  console.log(json);
   var a = document.createElement("a");
-  if (!("download" in a))
-    return null;
-  a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(obj));
-  a.download = "line-break-matrix.json";
-  a.textContent = "Download JSON"
-  return a;
+  if ("download" in a) {
+    a.href = "data:text/json;charset=utf-8," + encodeURIComponent(json);
+    a.download = "line-break-matrix.json";
+    a.textContent = "Download JSON"
+    return a;
+  }
+  return null;
 }
 
 function toHex(value) {
