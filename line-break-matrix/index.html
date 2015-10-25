@@ -2,6 +2,11 @@
 <title>Line Break Matrix</title>
 <script src="../resources/fontloader.js"></script>
 <style>
+#menu {
+  background-color:lightgray;
+  border:thin solid gray;
+  padding:4px;
+}
 #test {
   font:50px/1 testfw;
   width:1em;
@@ -16,9 +21,11 @@
 }
 </style>
 <h1>Line Break Matrix</h1>
-<div id="menu">
-  <a href="?">Normal</a>
-  <a href="?word-break=break-all">break-all</a>
+<form id=menu method=get>
+  <input type=checkbox id="word-break-break-all" name="word-break" value="break-all">
+  <label for="word-break-break-all">word-break: break-all</label>
+  <input type=submit>
+</form>
 </div>
 <div id="log"></div>
 <div id="result"></div>
@@ -45,6 +52,9 @@ function run() {
         break;
       default:
         test.style[arg[0]] = arg[1];
+        var ui = document.getElementById(arg[0] + "-" + arg[1]);
+        if (ui)
+          ui.checked = true;
         break;
       }
     });
@@ -111,7 +121,7 @@ function createJsonDownloadLink(obj) {
     return null;
   a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(obj));
   a.download = "line-break-matrix.json";
-  a.textContent = "Download"
+  a.textContent = "Download JSON"
   return a;
 }
 
