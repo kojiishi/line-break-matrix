@@ -16,7 +16,7 @@
 }
 </style>
 <h1>Line Break Matrix</h1>
-<div>
+<div id="menu">
   <a href="?">Normal</a>
   <a href="?word-break=break-all">break-all</a>
 </div>
@@ -54,6 +54,9 @@ function run() {
   var matrix = getLineBreakMatrix(characters);
   dumpLineBreakMatrix(characters, matrix);
   test.textContent = "";
+  var download = createJsonDownloadLink(matrix);
+  if (download != null)
+    menu.appendChild(download);
 }
 
 function createCharacterArray(begin, last) {
@@ -100,6 +103,16 @@ function dumpLineBreakMatrix(characters, matrix) {
       }).join(String.fromCharCode(0x200C)));
   }
   result.textContent = rows.join("\n");
+}
+
+function createJsonDownloadLink(obj) {
+  var a = document.createElement("a");
+  if (!("download" in a))
+    return null;
+  a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(obj));
+  a.download = "line-break-matrix.json";
+  a.textContent = "Download"
+  return a;
 }
 
 function toHex(value) {
