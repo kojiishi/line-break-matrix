@@ -28,10 +28,11 @@ ins {
 <form id=menu method=get>
   <input type=checkbox id="word-break-break-all" name="word-break" value="break-all">
   <label for="word-break-break-all">word-break: break-all</label>
-  <select name="compare">
+  <select id="showlist" name="show">
+    <option value="">Your browser</option>
+  </select>
+  <select id="comparelist" name="compare">
     <option value="">Compare with...</option>
-    <option value="chrome">Chrome</option>
-    <option value="chrome-break-all">Chrome (break-all)</option>
   </select>
   <input type=submit>
 </form>
@@ -40,7 +41,9 @@ ins {
 <div id="result"></div>
 <div id="test"></div>
 <script>
+var matrix;
 var testFontsize = parseFloat(getComputedStyle(test).fontSize);
+
 testfwFont("../resources/").then(function () {
   debug("Calculating...");
   setTimeout(function () {
@@ -51,14 +54,18 @@ testfwFont("../resources/").then(function () {
 
 function run() {
   var characters = null;
+  var show = null;
   var compareWith = null;
   var args = location.search;
   if (args && args.length > 1) {
     args.slice(1).split("&").forEach(function (arg) {
       arg = arg.split("=", 2);
       switch (arg[0]) {
+      case "show":
+        show = arg[1];
+        break;
       case "compare":
-        compareWith = data[arg[1]];
+        compareWith = arg[1];
         break;
       case "code":
         characters = createCharacterArray(arg[1]);
@@ -74,7 +81,10 @@ function run() {
   }
   if (!characters)
     characters = createCharacterArray(0x21, 0x7E);
-  var matrix = getLineBreakMatrix(characters);
+  compareWith = getData(compareWith, comparelist);
+  matrix = getData(show, showlist);
+  if (!matrix)
+    matrix = calculateLineBreakMatrix(characters);
   dumpLineBreakMatrix(characters, matrix, compareWith);
   test.textContent = "";
   var download = createJsonDownloadLink(matrix);
@@ -93,7 +103,7 @@ function createCharacterArray(begin, last) {
     return String.fromCharCode(begin + i); })
 }
 
-function getLineBreakMatrix(characters) {
+function calculateLineBreakMatrix(characters) {
   var matrix = [];
   for (var lastIndex = 0; lastIndex < characters.length; lastIndex++) {
     var last = characters[lastIndex];
@@ -136,9 +146,19 @@ function dumpLineBreakMatrix(characters, matrix, compareWith) {
   }
 }
 
+function getData(value, list) {
+  for (var key in data) {
+    var item = document.createElement("option");
+    item.value = key;
+    item.textContent = key;
+    item.selected = (key == value);
+    list.appendChild(item);
+  }
+  return data[value];
+}
+
 function createJsonDownloadLink(obj) {
   var json = JSON.stringify(obj);
-  console.log(json);
   var a = document.createElement("a");
   if ("download" in a) {
     a.href = "data:text/json;charset=utf-8," + encodeURIComponent(json);
