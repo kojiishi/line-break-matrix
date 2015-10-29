@@ -83,13 +83,12 @@ function run() {
     characters = createCharacterArray(0x21, 0x7E);
   compareWith = getData(compareWith, comparelist);
   matrix = getData(show, showlist);
-  if (!matrix)
+  if (!matrix) {
     matrix = calculateLineBreakMatrix(characters);
+    test.textContent = "";
+  }
   dumpLineBreakMatrix(characters, matrix, compareWith);
-  test.textContent = "";
-  var download = createJsonDownloadLink(matrix);
-  if (download != null)
-    menu.appendChild(download);
+  appendJsonData(matrix);
 }
 
 function createCharacterArray(begin, last) {
@@ -157,8 +156,22 @@ function getData(value, list) {
   return data[value];
 }
 
-function createJsonDownloadLink(obj) {
+function appendJsonData(obj) {
   var json = JSON.stringify(obj);
+  var element = createJsonDownloadLink(json);
+  if (element == null) {
+    element = document.createElement("pre");
+    element.style.width = "100%";
+    element.style.overflow = "scroll";
+    element.textContent = json;
+    element.addEventListener("click", function (e) {
+      window.getSelection().selectAllChildren(e.target);
+    });
+  }
+  document.body.appendChild(element);
+}
+
+function createJsonDownloadLink(json) {
   var a = document.createElement("a");
   if ("download" in a) {
     a.href = "data:text/json;charset=utf-8," + encodeURIComponent(json);
