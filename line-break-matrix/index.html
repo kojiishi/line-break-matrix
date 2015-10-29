@@ -81,8 +81,8 @@ function run() {
   }
   if (!characters)
     characters = createCharacterArray(0x21, 0x7E);
-  compareWith = getData(compareWith, comparelist);
-  matrix = getData(show, showlist);
+  compareWith = getData(compareWith, document.getElementById("comparelist"));
+  matrix = getData(show, document.getElementById("showlist"));
   if (!matrix) {
     matrix = calculateLineBreakMatrix(characters);
     test.textContent = "";
