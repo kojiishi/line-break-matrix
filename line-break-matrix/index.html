@@ -19,6 +19,14 @@ ins {
   background-color:yellow;
   text-decoration:none;
 }
+#json {
+  background-color:lightgray;
+  padding:.2em;
+}
+#json pre {
+  border:solid thin gray;
+  margin:0;
+}
 #log {
   background-color:lightgray;
   padding:.2em;
@@ -40,6 +48,7 @@ ins {
 <div id="log"></div>
 <div id="result"></div>
 <div id="test"></div>
+<div id="json">JSON data: </div>
 <script>
 var matrix;
 var testFontsize = parseFloat(getComputedStyle(test).fontSize);
@@ -157,18 +166,18 @@ function getData(value, list) {
 }
 
 function appendJsonData(obj) {
-  var json = JSON.stringify(obj);
-  var element = createJsonDownloadLink(json);
-  if (element == null) {
-    element = document.createElement("pre");
-    element.style.width = "100%";
-    element.style.overflow = "scroll";
-    element.textContent = json;
-    element.addEventListener("click", function (e) {
-      window.getSelection().selectAllChildren(e.target);
-    });
-  }
-  document.body.appendChild(element);
+  var jsonstr = JSON.stringify(obj);
+  var element = createJsonDownloadLink(jsonstr);
+  if (element != null)
+    json.appendChild(element);
+  element = document.createElement("pre");
+  element.style.width = "100%";
+  element.style.overflow = "scroll";
+  element.textContent = jsonstr;
+  element.addEventListener("click", function (e) {
+    window.getSelection().selectAllChildren(e.target);
+  });
+  json.appendChild(element);
 }
 
 function createJsonDownloadLink(json) {
@@ -176,7 +185,7 @@ function createJsonDownloadLink(json) {
   if ("download" in a) {
     a.href = "data:text/json;charset=utf-8," + encodeURIComponent(json);
     a.download = "line-break-matrix.json";
-    a.textContent = "Download JSON"
+    a.textContent = "Download"
     return a;
   }
   return null;
